@@ -1,0 +1,6 @@
+Your-Repo-Folder/
+├── .gitignore
+├── requirements.txt
+├── app.py
+└── templates/
+    └── index.html

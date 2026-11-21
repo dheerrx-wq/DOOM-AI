@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DOOM AI — Cybersecurity Command Dashboard</title>
+  <style>
+    :root {
+      --bg: #0f1317;
+      --panel: #161c22;
+      --panel-alt: #1d252d;
+      --border: #2a343f;
+      --emerald: #10b981;
+      --emerald-dim: rgba(16, 185, 129, 0.14);
+      --gold: #d4af37;
+      --gold-dim: rgba(212, 175, 55, 0.16);
+      --danger: #ef4444;
+      --danger-dim: rgba(239, 68, 68, 0.16);
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+    body { background: var(--bg); color: var(--text); padding: 24px; line-height: 1.45; }
+    .container { max-width: 1240px; margin: 0 auto; }
+    header {
+      display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center;
+      border-bottom: 1px solid var(--border); padding-bottom: 16px; margin-bottom: 22px; gap: 12px;
+    }
+    .brand h1 { font-size: 1.65rem; letter-spacing: 0.06em; color: var(--emerald); }
+    .brand span { color: var(--gold); }
+    .brand p { color: var(--muted); font-size: 0.88rem; margin-top: 2px; }
+    .pill {
+      font-size: 0.78rem; padding: 6px 12px; border-radius: 999px; font-weight: 600;
+      border: 1px solid var(--gold); color: var(--gold); background: var(--gold-dim);
+    }
+    .metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-bottom: 22px; }
+    .card { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+    .metric-label { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--muted); }
+    .metric-value { font-size: 1.9rem; font-weight: 700; margin-top: 6px; }
+    .c-emerald { color: var(--emerald); }
+    .c-gold { color: var(--gold); }
+    .c-danger { color: var(--danger); }
+    .modules { display: grid; grid-template-columns: repeat(auto-fit, minmax(275px, 1fr)); gap: 16px; margin-bottom: 24px; }
+    .module-card h2 { font-size: 1rem; color: var(--emerald); margin-bottom: 6px; display: flex; justify-content: space-between; }
+    .module-card p { font-size: 0.84rem; color: var(--muted); margin-bottom: 12px; }
+    .tag { font-size: 0.7rem; padding: 2px 8px; border-radius: 4px; background: var(--emerald-dim); color: var(--emerald); border: 1px solid var(--emerald); }
+    input[type="text"] {
+      width: 100%; padding: 9px 11px; border-radius: 6px; border: 1px solid var(--border);
+      background: var(--bg); color: var(--text); margin-bottom: 10px; font-size: 0.88rem;
+    }
+    .btn-row { display: flex; gap: 8px; flex-wrap: wrap; }
+    button {
+      cursor: pointer; border: none; border-radius: 6px; padding: 8px 13px; font-size: 0.84rem; font-weight: 600;
+      transition: opacity 0.15s ease;
+    }
+    button:hover { opacity: 0.88; }
+    .btn-emerald { background: var(--emerald); color: #08120e; }
+    .btn-gold { background: var(--gold); color: #161306; }
+    .btn-outline { background: transparent; color: var(--text); border: 1px solid var(--border); }
+    .feedback { margin-top: 10px; font-size: 0.82rem; color: var(--gold); min-height: 18px; }
+    .table-wrap { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; overflow-x: auto; }
+    .table-header {
+      padding: 14px 16px; border-bottom: 1px solid var(--border);
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .table-header h2 { font-size: 1rem; color: var(--gold); }
+    table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+    th, td { text-align: left; padding: 11px 14px; border-bottom: 1px solid var(--border); }
+    th { color: var(--muted); font-weight: 600; background: var(--panel-alt); }
+    .badge { padding: 3px 8px; border-radius: 4px; font-size: 0.74rem; font-weight: 700; }
+    .b-BLOCK { background: var(--danger-dim); color: var(--danger); }
+    .b-REVIEW { background: var(--gold-dim); color: var(--gold); }
+    .b-ALLOW { background: var(--emerald-dim); color: var(--emerald); }
+    .sim-pill { font-size: 0.68rem; margin-left: 6px; padding: 1px 6px; border-radius: 4px; border: 1px solid var(--muted); color: var(--muted); }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <h1>DOOM <span>AI</span></h1>
+        <p>All-in-One Defensive Cybersecurity Prototype • Localhost Command Center</p>
+      </div>
+      <div class="pill">LOCAL DEMO • AUTO-REFRESH (4s)</div>
+    </header>
+
+    <section class="metrics">
+      <div class="card"><div class="metric-label">Recorded Events</div><div class="metric-value" id="m-total">0</div></div>
+      <div class="card"><div class="metric-label">Blocked Threats</div><div class="metric-value c-danger" id="m-blocked">0</div></div>
+      <div class="card"><div class="metric-label">Needs Review</div><div class="metric-value c-gold" id="m-review">0</div></div>
+      <div class="card"><div class="metric-label">Allowed Activity</div><div class="metric-value c-emerald" id="m-allowed">0</div></div>
+      <div class="card"><div class="metric-label">Avg Risk Score</div><div class="metric-value c-gold" id="m-risk">0</div></div>
+    </section>
+
+    <section class="modules">
+      <div class="card module-card">
+        <h2>Web App Firewall <span class="tag">ACTIVE</span></h2>
+        <p>Inspect sample web inputs (e.g. <code>hello-world</code> or <code>' OR 1=1 --</code>) or trigger safe demo attacks.</p>
+        <input type="text" id="waf-input" placeholder="Enter request payload to inspect..." />
+        <div class="btn-row">
+          <button class="btn-emerald" onclick="runWafInspect()">Inspect Input</button>
+          <button class="btn-gold" onclick="runWafSim()">Run Simulation</button>
+        </div>
+        <div class="feedback" id="waf-msg"></div>
+      </div>
+
+      <div class="card module-card">
+        <h2>Phishing & URL Security <span class="tag">ACTIVE</span></h2>
+        <p>Check URLs with explainable heuristics (HTTPS, raw IP, deceptive keywords, risky TLDs).</p>
+        <input type="text" id="url-input" placeholder="e.g. http://192.168.1.5/login-verify.xyz" />
+        <div class="btn-row">
+          <button class="btn-emerald" onclick="runUrlScan()">Scan URL</button>
+        </div>
+        <div class="feedback" id="url-msg"></div>
+      </div>
+
+      <div class="card module-card">
+        <h2>File Integrity (SHA-256) <span class="tag">ACTIVE</span></h2>
+        <p>Creates a trusted hash baseline for <code>fim_sandbox/</code> and flags modified, added, or deleted files.</p>
+        <div class="btn-row">
+          <button class="btn-emerald" onclick="runFimBaseline()">Save Baseline</button>
+          <button class="btn-outline" onclick="runFimCheck()">Check Integrity</button>
+        </div>
+        <div class="feedback" id="fim-msg"></div>
+      </div>
+
+      <div class="card module-card">
+        <h2>Network Monitor <span class="tag">DEMO</span></h2>
+        <p>Generates authorized local simulated telemetry for port sweeps, beacons, and normal traffic.</p>
+        <div class="btn-row">
+          <button class="btn-gold" onclick="runNetSim()">Simulate Traffic</button>
+        </div>
+        <div class="feedback" id="net-msg"></div>
+      </div>
+    </section>
+
+    <section class="table-wrap">
+      <div class="table-header">
+        <h2>Recent Security Events & Explainable Threat Analysis</h2>
+        <button class="btn-outline" onclick="loadEvents()">Refresh Now</button>
+      </div>
+      <table>
+        <thead>
+          <tr>
+            <th>Time</th>
+            <th>Module</th>
+            <th>Action</th>
+            <th>Risk</th>
+            <th>Event</th>
+            <th>Explanation</th>
+          </tr>
+        </thead>
+        <tbody id="events-body"></tbody>
+      </table>
+    </section>
+  </div>
+
+  <script>
+    async function postJson(url, body = {}) {
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      return res.json();
+    }
+
+    async function runWafInspect() {
+      const payload = document.getElementById("waf-input").value;
+      const data = await postJson("/api/waf/inspect", { payload });
+      document.getElementById("waf-msg").textContent = data.error || `${data.action} (Risk ${data.risk_score}/100)`;
+      loadEvents();
+    }
+
+    async function runWafSim() {
+      const data = await postJson("/api/waf/simulate");
+      document.getElementById("waf-msg").textContent = `Generated ${data.generated} simulated WAF events.`;
+      loadEvents();
+    }
+
+    async function runUrlScan() {
+      const url = document.getElementById("url-input").value;
+      const data = await postJson("/api/url/scan", { url });
+      document.getElementById("url-msg").textContent = data.error || `${data.action} (Risk ${data.risk_score}/100)`;
+      loadEvents();
+    }
+
+    async function runFimBaseline() {
+      const data = await postJson("/api/fim/baseline");
+      document.getElementById("fim-msg").textContent = `Baseline saved for ${data.files_hashed} file(s).`;
+      loadEvents();
+    }
+
+    async function runFimCheck() {
+      const data = await postJson("/api/fim/check");
+      document.getElementById("fim-msg").textContent = data.error || data.explanation;
+      loadEvents();
+    }
+
+    async function runNetSim() {
+      const data = await postJson("/api/network/simulate");
+      document.getElementById("net-msg").textContent = `Logged ${data.generated} simulated network events.`;
+      loadEvents();
+    }
+
+    async function loadEvents() {
+      const res = await fetch("/api/events");
+      const data = await res.json();
+      document.getElementById("m-total").textContent = data.metrics.total;
+      document.getElementById("m-blocked").textContent = data.metrics.blocked;
+      document.getElementById("m-review").textContent = data.metrics.review;
+      document.getElementById("m-allowed").textContent = data.metrics.allowed;
+      document.getElementById("m-risk").textContent = data.metrics.avg_risk;
+
+      const tbody = document.getElementById("events-body");
+      tbody.innerHTML = data.events.map(e => `
+        <tr>
+          <td>${e.timestamp}</td>
+          <td><strong>${e.module}</strong></td>
+          <td><span class="badge b-${e.action}">${e.action}</span></td>
+          <td><strong>${e.risk_score}</strong>/100</td>
+          <td>${e.title}${e.is_simulated ? '<span class="sim-pill">DEMO</span>' : ''}</td>
+          <td>${e.explanation}</td>
+        </tr>
+      `).join("");
+    }
+
+    loadEvents();
+    setInterval(loadEvents, 4000);
+  </script>
+</body>
+</html>
